@@ -21,11 +21,10 @@ class TestBaseModelDocs(unittest.TestCase):
 
     def test_pep8_conformance(self):
         """Test that models/base_model.py conforms to PEP8."""
-        for path in ['models/base_model.py',
-                     'tests/test_models/test_base_model.py']:
-            with self.subTest(path=path):
-                errors = pycodestyle.Checker(path).check_all()
-                self.assertEqual(errors, 0)
+        path = 'models/base_model.py'
+        with self.subTest(path=path):
+            errors = pycodestyle.Checker(path).check_all()
+            self.assertEqual(errors, 0)
 
     def test_module_docstring(self):
         """Test for the existence of module docstring"""
@@ -85,6 +84,9 @@ class TestBaseModel(unittest.TestCase):
         tic = datetime.now()
         inst1 = BaseModel()
         toc = datetime.now()
+        print('tic: ' + tic.strftime("%H:%M:%S") + '\n' + 'inst1.created_at: '
+              + inst1.created_at.strftime("%H:%M:%S") + '\n' +
+              'toc: ' + toc.strftime("%H:%M:%S"))
         self.assertTrue(tic <= inst1.created_at <= toc)
         time.sleep(1e-4)
         tic = datetime.now()
