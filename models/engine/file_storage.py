@@ -86,10 +86,8 @@ class FileStorage:
         """
         count = 0
         if cls:
-            for key in self.__objects.keys():
-                if cls.__name__ in key:
-                    count = count + 1
+            count = len(self.all(cls).keys())
         else:
-            count = len(self.__objects.keys())
+            count = len(self.all().keys())
 
         return count
