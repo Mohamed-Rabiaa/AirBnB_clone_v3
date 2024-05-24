@@ -12,10 +12,12 @@ from models.city import City
 from models.amenity import Amenity
 from models.review import Review
 
+
 @app_views.route('/status')
 def status():
     """ Returns a JSON: "status": "OK" """
     return jsonify({"status": "OK"})
+
 
 @app_views.route('/stats')
 def objs_number():
