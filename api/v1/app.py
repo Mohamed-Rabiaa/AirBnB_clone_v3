@@ -2,8 +2,8 @@
 """ app.py """
 
 
-from flask import Flask, jsonify
 from models import storage
+from flask import Flask, jsonify
 from api.v1.views import app_views
 import os
 

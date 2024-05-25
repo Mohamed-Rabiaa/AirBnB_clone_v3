@@ -92,11 +92,7 @@ class DBStorage:
         count = 0
         dct = {}
         if cls:
-            dct = self.all(cls)
-            for key in dct.keys():
-                if cls.__name__ in key:
-                    count = count + 1
+            count = len(self.all(cls).keys())
         else:
-            dct = self.all()
-            count = len(dct.keys())
+            count = len(self.all().keys())
         return count
