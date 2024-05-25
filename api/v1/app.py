@@ -16,13 +16,6 @@ def handle_api_error(error):
     """ Returns a JSON-formatted 404 status code response """
     return jsonify({"error": "Not found"}), 404
 
-
-@app.errorhandler(400)
-def handle_api_error(error):
-    """ Returns a JSON-formatted 400 status code response """
-    return jsonify({"error": error.description}), 400
-
-
 @app.teardown_appcontext
 def close(exception):
     """ close method """

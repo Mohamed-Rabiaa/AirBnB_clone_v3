@@ -31,7 +31,7 @@ def delete_state(state_id):
     state = storage.get(State, state_id)
     if not state:
         abort(404)
-    storage.delete(state)
+    state.delete()
     storage.save()
     return jsonify({}), 200
 
@@ -41,11 +41,11 @@ def add_state():
     """ Adds a new state """
     body = request.get_json()
     if not body:
-        abort(404, description='Not a JSON')
-    if not body.get('name'):
-        abort(404, description='Missing name')
+        abort(404, 'Not a JSON')
+    if "name" not in body:
+        abort(404, 'Missing name')
 
-    state = State(name=body.get('name'))
+    state = State(**body)
     state.save()
     return jsonify(state.to_dict()), 201
 
@@ -58,7 +58,7 @@ def update_state(state_id):
         abort(404)
     body = request.get_json()
     if not body:
-        abort(404, description='Not a JSON')
-    setattr(state, 'name', body.get('name'))
+        abort(404, 'Not a JSON')
+    setattr(state, "name", body.get("name"))
     state.save()
     return jsonify(state.to_dict()), 200
