@@ -39,8 +39,9 @@ def delete_state(state_id):
 @app_views.route('/states', methods=['POST'], strict_slashes=False)
 def add_state():
     """ Adds a new state """
-    body = request.get_json()
-    if not body:
+    try:
+        body = request.get_json()
+    except Exception as e:
         abort(400, 'Not a JSON')
     if "name" not in body:
         abort(400, 'Missing name')
@@ -56,8 +57,9 @@ def update_state(state_id):
     state = storage.get(State, state_id)
     if not state:
         abort(404)
-    body = request.get_json()
-    if not body:
+    try:
+        body = request.get_json()
+    except Exception as e:
         abort(400, 'Not a JSON')
     setattr(state, "name", body.get("name"))
     state.save()
