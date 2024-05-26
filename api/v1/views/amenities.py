@@ -17,7 +17,7 @@ def get_all_amenities():
     return jsonify(output)
 
 
-@app_views.route('//amenities/<amenity_id>',
+@app_views.route('/amenities/<amenity_id>',
                  methods=['GET'], strict_slashes=False)
 def get_amenity(amenity_id):
     """ Retrieves an amenity object by its id """
