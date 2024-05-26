@@ -1,0 +1,71 @@
+#!/usr/bin/python3
+""" State view """
+
+from api.v1.views import app_views
+from models import storage
+from models.city import City
+from models.state import State
+from flask import jsonify, abort, request
+
+
+@app_views.route('/states/<state_id>/cities', methods=['GET'], strict_slashes=False)
+def get_all_cities(state_id):
+    """ Retrieves the list of all City objects linked to a state """
+    output = []
+    for city in storage.all(City).values():
+        if city.state_id == state_id:
+            output.append(city.to_dict())
+    if len(output) == 0:
+        abort(404)
+    return jsonify(output)
+
+@app_views.route('/cities/<city_id>', methods=['GET'], strict_slashes=False)
+def get_city(city_id):
+    """ Retrieves a City object by its id """
+    city = storage.get(City, city_id)
+    if not city:
+        abort(404)
+    return jsonify(city.to_dict())
+
+
+@app_views.route('/cities/<city_id>', methods=['DELETE'], strict_slashes=False)
+def delete_city(city_id):
+    """ Deletes a City object by its id """
+    city = storage.get(City, city_id)
+    if not city:
+        abort(404)
+    city.delete()
+    storage.save()
+    return jsonify({}), 200
+
+
+@app_views.route('/states/<state_id>/cities', methods=['POST'], strict_slashes=False)
+def add_city(state_id):
+    """ Adds a new city to a state """
+    state = storage.get(State, state_id)
+    if not state:
+        abort(404)
+    try:
+        body = request.get_json()
+    except Exception as e:
+        abort(400, 'Not a JSON')
+    if "name" not in body:
+        abort(400, 'Missing name')
+    body['state_id'] = state_id
+    city = City(**body)
+    city.save()
+    return jsonify(city.to_dict()), 201
+
+@app_views.route('/cities/<city_id>', methods=['PUT'], strict_slashes=False)
+def update_city(city_id):
+    """ Updates an City object by its id"""
+    city = storage.get(City, city_id)
+    if not city:
+        abort(404)
+    try:
+        body = request.get_json()
+    except Exception as e:
+        abort(400, 'Not a JSON')
+    setattr(city, "name", body.get("name"))
+    city.save()
+    return jsonify(city.to_dict()), 200
