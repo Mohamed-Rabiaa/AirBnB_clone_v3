@@ -13,11 +13,11 @@ from flask import jsonify, abort, request
 def get_all_cities(state_id):
     """ Retrieves the list of all City objects linked to a state """
     output = []
-    for city in storage.all(City).values():
-        if city.state_id == state_id:
-            output.append(city.to_dict())
-    if len(output) == 0:
+    state = storage.get(State, state_id)
+    if not state:
         abort(404)
+    for city in state.cities:
+        output.append(city.to_dict())
     return jsonify(output)
 
 
@@ -62,7 +62,7 @@ def add_city(state_id):
 
 @app_views.route('/cities/<city_id>', methods=['PUT'], strict_slashes=False)
 def update_city(city_id):
-    """ Updates an City object by its id"""
+    """ Updates a City object by its id"""
     city = storage.get(City, city_id)
     if not city:
         abort(404)
