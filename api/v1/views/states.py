@@ -41,9 +41,9 @@ def add_state():
     """ Adds a new state """
     body = request.get_json()
     if not body:
-        abort(404, 'Not a JSON')
+        abort(400, 'Not a JSON')
     if "name" not in body:
-        abort(404, 'Missing name')
+        abort(400, 'Missing name')
 
     state = State(**body)
     state.save()
@@ -58,7 +58,7 @@ def update_state(state_id):
         abort(404)
     body = request.get_json()
     if not body:
-        abort(404, 'Not a JSON')
+        abort(400, 'Not a JSON')
     setattr(state, "name", body.get("name"))
     state.save()
     return jsonify(state.to_dict()), 200
