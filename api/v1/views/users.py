@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-""" amenities view """
+""" users view """
 
 from api.v1.views import app_views
 from models import storage

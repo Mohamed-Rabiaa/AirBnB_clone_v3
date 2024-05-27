@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-""" State view """
+""" places view """
 
 from api.v1.views import app_views
 from models import storage
