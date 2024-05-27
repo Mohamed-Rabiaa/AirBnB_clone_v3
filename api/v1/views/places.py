@@ -79,6 +79,9 @@ def update_place(place_id):
         body = request.get_json()
     except Exception as e:
         abort(400, 'Not a JSON')
-    setattr(place, "name", body.get("name"))
+    ignored_attrs = ['id', 'user_id', 'city_id', 'created_at', 'updated_at']
+    for key, value in body.items():
+        if key not in ignored_attrs:
+            setattr(place, key, value)
     place.save()
     return jsonify(place.to_dict()), 200

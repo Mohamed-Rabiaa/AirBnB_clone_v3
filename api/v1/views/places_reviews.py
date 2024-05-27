@@ -79,6 +79,9 @@ def update_review(review_id):
         body = request.get_json()
     except Exception as e:
         abort(400, 'Not a JSON')
-    setattr(review, "text", body.get("text"))
+    ignored_attrs = ['id', 'user_id', 'place_id', 'created_at', 'updated_at']
+    for key, value in body.items():
+        if key not in ignored_attrs:
+            setattr(review, key, value)
     review.save()
     return jsonify(review.to_dict()), 200

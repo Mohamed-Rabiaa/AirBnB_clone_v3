@@ -67,6 +67,9 @@ def update_user(user_id):
         body = request.get_json()
     except Exception as e:
         abort(400, 'Not a JSON')
-    setattr(user, "password", body.get("password"))
+    ignored_attrs = ['id', 'email', 'created_at', 'updated_at']
+    for key, value in body.items():
+        if key not in ignored_attrs:
+            setattr(user, key, value)
     user.save()
     return jsonify(user.to_dict()), 200
