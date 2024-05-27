@@ -26,6 +26,7 @@ def get_user(user_id):
         abort(404)
     return jsonify(user.to_dict())
 
+
 @app_views.route('/users/<user_id>', methods=['DELETE'],
                  strict_slashes=False)
 def delete_user(user_id):
@@ -53,6 +54,7 @@ def add_user():
     user = User(**body)
     user.save()
     return jsonify(user.to_dict()), 201
+
 
 @app_views.route('/users/<user_id>',
                  methods=['PUT'], strict_slashes=False)
