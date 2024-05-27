@@ -45,7 +45,7 @@ class TestDBStorageDocs(unittest.TestCase):
         result = pep8s.check_files(['tests/test_models/test_engine/\
         test_db_storage.py'])
         # self.assertEqual(result.total_errors, 0,
-                         # "Found code style errors (and warnings).")
+        # "Found code style errors (and warnings).")
 
     def test_db_storage_module_docstring(self):
         """Test for the db_storage.py module docstring"""
@@ -101,7 +101,6 @@ class TestDBStorage(unittest.TestCase):
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_count(self):
         """ Tests the count function of FileStorage """
-        storage = DBStorage()
         count = len(storage.all(State).keys())
         self.assertEqual(count, storage.count(State))
         count = len(storage.all().keys())
