@@ -3,9 +3,11 @@
 
 from api.v1.views import app_views
 from models import storage
+from models.state import State
 from models.city import City
 from models.user import User
 from models.place import Place
+from models.amenity import Amenity
 from flask import jsonify, abort, request
 
 
@@ -85,3 +87,54 @@ def update_place(place_id):
             setattr(place, key, value)
     place.save()
     return jsonify(place.to_dict()), 200
+
+
+@app_views.route('/places_search', methods=['POST'],
+                 strict_slashes=False)
+def search_places():
+    """ search_places """
+    try:
+        body = request.get_json()
+    except Exception as a:
+        abort(400, 'Not a JSON')
+
+    output = []
+    empty_lists = False
+    if len(body.keys()) == 0:
+        for value in body.values():
+            if len(value) == 0:
+                empty_lists = True
+            else:
+                empty_lists = False
+                break
+
+    if empty_lists:
+        output = get_places()
+    else:
+        if 'states' in body and len(body['states']) > 0:
+            for state_id in body['states']:
+                state = storage.get(State, state_id)
+                if state:
+                    for city in state.cities:
+                        output.extend(get_places(city.id))
+        if 'cities' in body and len(body['cities']) > 0:
+            for city_id in body['cities']:
+                output.extend(get_places(city_id))
+    return jsonify(output)
+
+
+def get_places(city_id=None):
+    """ get_places """
+    output = []
+    if (city_id):
+        city = storage.get(City, city_id)
+        if not city:
+            abort(404)
+        for place in city.places:
+            if place.to_dict() not in output:
+                output.append(place.to_dict())
+    else:
+        places = storage.all(Place)
+        for place in places:
+            output.append(place.to_dict())
+    return output
