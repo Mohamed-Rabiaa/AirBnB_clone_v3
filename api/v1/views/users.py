@@ -43,9 +43,9 @@ def delete_user(user_id):
                  strict_slashes=False)
 def add_user():
     """ Adds a new user """
-    try:
-        body = request.get_json()
-    except Exception as e:
+
+    body = request.get_json()
+    if not body:
         abort(400, 'Not a JSON')
     if "email" not in body:
         abort(400, 'Missing email')
@@ -63,9 +63,9 @@ def update_user(user_id):
     user = storage.get(User, user_id)
     if not user:
         abort(404)
-    try:
-        body = request.get_json()
-    except Exception as e:
+
+    body = request.get_json()
+    if not body:
         abort(400, 'Not a JSON')
     ignored_attrs = ['id', 'email', 'created_at', 'updated_at']
     for key, value in body.items():

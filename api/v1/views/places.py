@@ -53,9 +53,9 @@ def add_place(city_id):
     city = storage.get(City, city_id)
     if not city:
         abort(404)
-    try:
-        body = request.get_json()
-    except Exception as e:
+
+    body = request.get_json()
+    if not body:
         abort(400, 'Not a JSON')
     if "user_id" not in body:
         abort(400, 'Missing user_id')
@@ -77,9 +77,8 @@ def update_place(place_id):
     place = storage.get(Place, place_id)
     if not place:
         abort(404)
-    try:
-        body = request.get_json()
-    except Exception as e:
+    body = request.get_json()
+    if not body:
         abort(400, 'Not a JSON')
     ignored_attrs = ['id', 'user_id', 'city_id', 'created_at', 'updated_at']
     for key, value in body.items():
@@ -93,9 +92,8 @@ def update_place(place_id):
                  strict_slashes=False)
 def search_places():
     """ search_places """
-    try:
-        body = request.get_json()
-    except Exception as a:
+    body = request.get_json()
+    if not body:
         abort(400, 'Not a JSON')
 
     states_ids = body.get("states")
@@ -121,6 +119,7 @@ def search_places():
                     if place not in output:
                         output.append(place)
 
+    '''
     if amenities_ids:
         for place in output:
             if place.amenities:
@@ -130,6 +129,16 @@ def search_places():
                     if amenity_id not in place_amenities_ids:
                         output.remove(place)
                         break
+    '''
+    if amenities_ids:
+        filtered_output = []
+        for place in output:
+            place_amenities_ids = [amenity.id for amenity in place.amenities]
+            if all(
+                    amenity_id in place_amenities_ids for amenity_id in amenities_ids):
+                filtered_output.append(place)
+        output = filtered_output
+
     output = [storage.get(Place, place.id).to_dict() for place in output]
     keys_to_remove = ["amenities", "reviews", "amenity_ids"]
     result = [
