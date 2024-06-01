@@ -98,43 +98,42 @@ def search_places():
     except Exception as a:
         abort(400, 'Not a JSON')
 
+    states_ids = body.get("states")
+    cities_ids = body.get("cities")
+    amenities_ids = body.get("amenities")
     output = []
-    empty_lists = False
-    if len(body.keys()) == 0:
-        for value in body.values():
-            if len(value) == 0:
-                empty_lists = True
-            else:
-                empty_lists = False
-                break
+    if not states_ids and not cities_ids:
+        places = storage.all(Place).values()
+        output = list(places)
 
-    if empty_lists:
-        output = get_places()
-    else:
-        if 'states' in body and len(body['states']) > 0:
-            for state_id in body['states']:
-                state = storage.get(State, state_id)
-                if state:
-                    for city in state.cities:
-                        output.extend(get_places(city.id))
-        if 'cities' in body and len(body['cities']) > 0:
-            for city_id in body['cities']:
-                output.extend(get_places(city_id))
+    if states_ids:
+        for state_id in states_ids:
+            state = storage.get(State, state_id)
+            if state:
+                for city in state.cities:
+                    for place in city.places:
+                        output.append(place)
+    if cities_ids:
+        for city_id in cities_ids:
+            city = storage.get(City, city_id)
+            if city:
+                for place in city.places:
+                    if place not in output:
+                        output.append(place)
+
+    if amenities_ids:
+        for place in output:
+            if place.amenities:
+                place_amenities_ids = [
+                    amenity.id for amenity in place.amenities]
+                for amenity_id in amenities_ids:
+                    if amenity_id not in place_amenities_ids:
+                        output.remove(place)
+                        break
+    output = [storage.get(Place, place.id).to_dict() for place in output]
+    keys_to_remove = ["amenities", "reviews", "amenity_ids"]
+    result = [
+        {k: v for k, v in place_dict.items() if k not in keys_to_remove}
+        for place_dict in output
+    ]
     return jsonify(output)
-
-
-def get_places(city_id=None):
-    """ get_places """
-    output = []
-    if (city_id):
-        city = storage.get(City, city_id)
-        if not city:
-            abort(404)
-        for place in city.places:
-            if place.to_dict() not in output:
-                output.append(place.to_dict())
-    else:
-        places = storage.all(Place)
-        for place in places:
-            output.append(place.to_dict())
-    return output
